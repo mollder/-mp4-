@@ -1,27 +1,36 @@
-package com.terry.tweetStorm;
- 
-import java.util.Scanner;
+package com.ingue.pollStorm;
+
+import com.ingue.dao.ConnectionMongo;
+import com.mongodb.DBCollection;
+import com.ingue.dao.*;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
+import backtype.storm.tuple.Fields;
 import backtype.storm.utils.Utils;
  
 public class TopologyLocal {
 	
+	ConnectionMongo mongoConnection;
+	@Autowired
+	DBCollection collection;
+	
+	public TopologyLocal() {
+		mongoConnection = new ConnectionMongo();
+     	this.collection=mongoConnection.collection;
+	}
+	
         public static void main(String args[]){
         	
-        	String keyword;
-        	Scanner scan = new Scanner(System.in);
-        	
-        	System.out.println("키워드를 입력하시오 : ");
-        	keyword = scan.nextLine();
-        	
+        	   PrintPoll print = new PrintPoll();
                TopologyBuilder builder = new TopologyBuilder();
                /*Spout과 Bolt간의 연결 토폴로지는 TopologyBuilder라는 클래스를 통해서 정의한다.*/
-               builder.setSpout("TweetSpout", new TweetSpout(keyword),2);
-               builder.setBolt("SplitBolt", new SplitBolt(),4).shuffleGrouping("TweetSpout");
-               builder.setBolt("InsertBolt", new InsertBolt(), 4).shuffleGrouping("SplitBolt");
+               builder.setSpout("PollSpout", new PollSpout(),1);
+               builder.setBolt("Bolt1", new WireSensingBolt(),1).shuffleGrouping("PollSpout");
+               builder.setBolt("Bolt2", new TemperSensingBolt(),1).shuffleGrouping("Bolt1");
+               builder.setBolt("Bolt3", new AngleSensingBolt(),1).shuffleGrouping("Bolt2");
+               builder.setBolt("Bolt4", new PressSensingBolt(),1).shuffleGrouping("Bolt3");
                //토폴로지 빌더 이용해서 토폴로지 기본 설정해주는 부분, spout 과 bolt
                
                Config conf = new Config();
@@ -32,10 +41,11 @@ public class TopologyLocal {
                
                cluster.submitTopology("TopologyLocal", conf,builder.createTopology());
                // 클러스터에 토폴로지 제출 
-               Utils.sleep(10000);
+               Utils.sleep(100000);
                // kill the LearningStormTopology
                cluster.killTopology("TopologyLocal");
                // shutdown the storm test cluster
-               cluster.shutdown();          
+               cluster.shutdown();  
+               //print.printPoll();
         }
 }

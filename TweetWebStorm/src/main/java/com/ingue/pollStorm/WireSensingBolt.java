@@ -12,39 +12,41 @@ import backtype.storm.tuple.Values;
 import com.ingue.dao.*;
 
 // 디비에 단어를 넣는 클래스
-public class AngleSensingBolt extends BaseBasicBolt{
-	
+public class WireSensingBolt extends BaseBasicBolt{
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -293245825742509019L;
-	LinkedBlockingQueue<PollDTO> queue = null;
+	private static final long serialVersionUID = -2179294233058608620L;
 	PollDTO data;
+	//PollDAO dao;
+	LinkedBlockingQueue<PollDTO> queue = null;
 	
-	public AngleSensingBolt() {
+	public WireSensingBolt() {
 		queue = new LinkedBlockingQueue<PollDTO>(300000);
 		data = new PollDTO();
+		//dao = new PollDAO();
 	}
 
     public void execute(Tuple tuple, BasicOutputCollector collector) {
            // TODO Auto-generated method stub
            checkAndAddQueue(tuple, collector);
            if(queue.isEmpty()) {
-      		  System.out.println("데이터가 없습니다.");
-      	  }else{
-               collector.emit(new Values(queue.poll()));
-      	  }
+     		  System.out.println("데이터가 없습니다.");
+     	  }else{
+              collector.emit(new Values(queue.poll()));
+     	  }
     }
     
     public void checkAndAddQueue(Tuple tuple, BasicOutputCollector collector) {
     	data = (PollDTO) tuple.getValueByField("Poll");
-
-    	if( (45<=data.getAngle()) && (data.getAngle() <= 135)) {
+    	if(data.getLiveWireNum() < 3) {
     		queue.offer((PollDTO)data);
+    		//dao.insertPollDTO(data);
     	}else {
-    		System.out.println("총 4개 센서 검사중 세번째 각도센서 검사에서 에러 검출");
-    		System.out.println("정상 각도 범주  : 45 <= 정상각도  <= 135 , 현재 각도 : " + data.getAngle());
-    		System.out.println("전신주가 비정상적으로 기울어져있을 수 있습니다.");
+    		System.out.println("총 4개 센서 검사중 첫번째 와이어 검사에서 에러 검출");
+    		System.out.println("동작해야 하는 와이어 개수  : "+3+"이상 현재 동작하는 와이어 개수 : " + data.getLiveWireNum());
+    		System.out.println("현재 전신주 와이어 중 일부 상태가 비정상적일 확률이 매우 높습니다.");
     	}
     }
 

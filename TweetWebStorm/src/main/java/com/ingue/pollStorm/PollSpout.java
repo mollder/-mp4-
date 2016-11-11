@@ -1,16 +1,9 @@
-package com.terry.tweetStorm;
+package com.ingue.pollStorm;
  
-import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import twitter4j.Query;
-import twitter4j.QueryResult;
-import twitter4j.Status;
-import twitter4j.Twitter;
-import twitter4j.TwitterFactory;
-import twitter4j.User;
-import twitter4j.auth.AccessToken;
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -18,18 +11,20 @@ import backtype.storm.topology.base.BaseRichSpout;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
-public class TweetSpout extends BaseRichSpout {
+import com.ingue.dao.*;
+
+public class PollSpout extends BaseRichSpout {
 	
 		  private static final long serialVersionUID = 1L;
           private SpoutOutputCollector collector;
-          LinkedBlockingQueue<String> queue = null;
-          String keyword;
-          int i = 0;
+          LinkedBlockingQueue<PollDTO> queue = null;
+          Random random;
+          PollDTO data;
           
-          public TweetSpout(String keyword) {
-        	  this.keyword = keyword;
-        	  queue = new LinkedBlockingQueue<String>(15000);
-              AccessTweet(keyword);
+          public PollSpout() {
+        	  queue = new LinkedBlockingQueue<PollDTO>(10000);
+        	  random = new Random();
+        	  generatingPollData();
           }
          
           public void open(Map conf,TopologyContext context,SpoutOutputCollector collector){
@@ -38,41 +33,25 @@ public class TweetSpout extends BaseRichSpout {
           
           public void nextTuple(){
         	  if(queue.isEmpty()) {
-        		  System.out.print("이만큼 출력가능"+i);
-        		  System.exit(0);
+        		  System.out.println("데이터가 없습니다.");
         	  }else{
                  this.collector.emit(new Values(queue.poll()));
-                 i +=1;
         	  }
           }/*이 메서드는 데이타 스트림 하나를 읽고 나서, 다음 데이타 스트림을 읽을 때 호출 되는 메서드 이다.*/
           
           public void declareOutputFields(OutputFieldsDeclarer declarer){
-                 declarer.declare(new Fields("tweet"));
+        	  declarer.declare(new Fields("Poll"));
           }
           
-          public void AccessTweet(String keyWord) {
-          	  try {
-     		        AccessToken accesstoken = new AccessToken("779212357524295680-1UlstpXT5s2gWDCESXTd1adPhIAUT7K", "6GU4F0Es1g2e2iwi7UG5cE7onhaP0EglricYiRHnQerlf");
-     		        Twitter twitter = TwitterFactory.getSingleton();
-     		        twitter.setOAuthConsumer("51wPX7Qf120uMqMU1ojh3K421", "XBM7Z1HUbaFcbrfrMrh2R0vyEVNwJ3ClA5NBDdp8Xxdqp71YJc");
-     		        twitter.setOAuthAccessToken(accesstoken);
-     		        User user = twitter.verifyCredentials();
-     		         // 어느 지역에 한정되서 검색하도록 수정
-     		        Query query = new Query(keyWord);
-     		        query.setCount(100);
-     		        QueryResult twitResult;
-     		        int i = 0;
-   		        
-   		        while(i< 1000)	{
-     		        twitResult = twitter.search(query);
-     		        List<Status> list = twitResult.getTweets();
-     		        for(Status status : list) {
-     		        	queue.offer(status.getText());
-     		        	i+=1;
-     		        }
-     		    }
-          }catch (Exception e) {
-		        e.printStackTrace();
-		    }
-          }
+          private void generatingPollData() {
+        	  for(int i = 1; i <= 100000; i++) {
+        		  data = new PollDTO();
+        		  data.setPollNum(i);
+        		  data.setAngle(random.nextDouble()*180);
+        		  data.setLiveWireNum(random.nextInt(8));
+        		  data.setPressure(random.nextDouble()*100);
+        		  data.setTemperature(random.nextDouble()*100);
+        		  queue.offer(data);
+        	  }
+          }     
 }
