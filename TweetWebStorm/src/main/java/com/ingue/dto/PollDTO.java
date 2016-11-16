@@ -1,4 +1,4 @@
-package com.ingue.dao;
+package com.ingue.dto;
 
 import java.io.Serializable;
 
@@ -18,7 +18,11 @@ public class PollDTO implements Serializable{
 	private double temperature;
 	private double pressure;
 	private int liveWireNum;
-	//bluesavage
+	private boolean wireOk;
+	private boolean temperOk;
+	private boolean angleOk;
+	private boolean pressOk;
+	
 	public PollDTO() {
 		
 	}
@@ -61,6 +65,38 @@ public class PollDTO implements Serializable{
 
 	public void setLiveWireNum(int liveWireNum) {
 		this.liveWireNum = liveWireNum;
+	}
+
+	public boolean isPressOk() {
+		return pressOk;
+	}
+
+	public void setPressOk(boolean pressOk) {
+		this.pressOk = pressOk;
+	}
+
+	public boolean isAngleOk() {
+		return angleOk;
+	}
+
+	public void setAngleOk(boolean angleOk) {
+		this.angleOk = angleOk;
+	}
+
+	public boolean isTemperOk() {
+		return temperOk;
+	}
+
+	public void setTemperOk(boolean temperOk) {
+		this.temperOk = temperOk;
+	}
+
+	public boolean isWireOk() {
+		return wireOk;
+	}
+
+	public void setWireOk(boolean wireOk) {
+		this.wireOk = wireOk;
 	}
 
 }

@@ -1,29 +1,16 @@
 package com.ingue.pollStorm;
 
-import com.ingue.dao.ConnectionMongo;
-import com.mongodb.DBCollection;
-import com.ingue.dao.*;
-
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
-import backtype.storm.tuple.Fields;
 import backtype.storm.utils.Utils;
  
 public class TopologyLocal {
 	
-	ConnectionMongo mongoConnection;
-	@Autowired
-	DBCollection collection;
-	
 	public TopologyLocal() {
-		mongoConnection = new ConnectionMongo();
-     	this.collection=mongoConnection.collection;
+		
 	}
-	
         public static void main(String args[]){
-        	
-        	   PrintPoll print = new PrintPoll();
                TopologyBuilder builder = new TopologyBuilder();
                /*Spout과 Bolt간의 연결 토폴로지는 TopologyBuilder라는 클래스를 통해서 정의한다.*/
                builder.setSpout("PollSpout", new PollSpout(),1);
@@ -31,6 +18,7 @@ public class TopologyLocal {
                builder.setBolt("Bolt2", new TemperSensingBolt(),1).shuffleGrouping("Bolt1");
                builder.setBolt("Bolt3", new AngleSensingBolt(),1).shuffleGrouping("Bolt2");
                builder.setBolt("Bolt4", new PressSensingBolt(),1).shuffleGrouping("Bolt3");
+               builder.setBolt("Bolt5", new DbBolt(),1).shuffleGrouping("Bolt4");
                //토폴로지 빌더 이용해서 토폴로지 기본 설정해주는 부분, spout 과 bolt
                
                Config conf = new Config();
