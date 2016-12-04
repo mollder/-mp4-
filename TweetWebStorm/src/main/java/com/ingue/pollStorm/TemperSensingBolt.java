@@ -13,12 +13,12 @@ import com.ingue.dto.*;
 public class TemperSensingBolt extends BaseBasicBolt{
 	
 	private static final long serialVersionUID = -8261142026413437692L;
-	LinkedBlockingQueue<PollDTO> queue = null;
-	PollDTO data;
+	LinkedBlockingQueue<CarDTO> queue = null;
+	CarDTO data;
 	
 	public TemperSensingBolt() {
-		queue = new LinkedBlockingQueue<PollDTO>(300000);
-		data = new PollDTO();
+		queue = new LinkedBlockingQueue<CarDTO>(300000);
+		data = new CarDTO();
 	}
 
     public void execute(Tuple tuple, BasicOutputCollector collector) {
@@ -32,12 +32,12 @@ public class TemperSensingBolt extends BaseBasicBolt{
     }
     
     public void checkAndAddQueue(Tuple tuple, BasicOutputCollector collector) {
-    	data = (PollDTO) tuple.getValueByField("Poll");
+    	data = (CarDTO) tuple.getValueByField("Poll");
     	if(data.getTemperature() <= 50) {
-    		queue.offer((PollDTO)data);
+    		queue.offer((CarDTO)data);
     	}else {
     		data.setTemperOk(false);
-    		queue.offer((PollDTO)data);
+    		queue.offer((CarDTO)data);
     	}
     }
 

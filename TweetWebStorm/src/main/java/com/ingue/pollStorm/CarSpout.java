@@ -12,18 +12,19 @@ import backtype.storm.tuple.Values;
 
 import com.ingue.dto.*;
 
-public class PollSpout extends BaseRichSpout {
+public class CarSpout extends BaseRichSpout {
 	
 		  private static final long serialVersionUID = 1L;
           private SpoutOutputCollector collector;
-          LinkedBlockingQueue<PollDTO> queue = null;
+          LinkedBlockingQueue<CarDTO> queue = null;
           Random random;
-          PollDTO data;
+          CarDTO data;
+          int num = 0;
           
-          public PollSpout() {
-        	  queue = new LinkedBlockingQueue<PollDTO>(10000);
+          public CarSpout() {
+        	  queue = new LinkedBlockingQueue<CarDTO>(300000);
         	  random = new Random();
-        	  generatingPollData();
+        	  generatingPollData(num);
           }
          
           public void open(Map conf,TopologyContext context,SpoutOutputCollector collector){
@@ -32,7 +33,7 @@ public class PollSpout extends BaseRichSpout {
           
           public void nextTuple(){
         	  if(queue.isEmpty()) {
-        		  System.out.println("데이터가 없습니다.");
+        		  generatingPollData(num);
         	  }else{
                  this.collector.emit(new Values(queue.poll()));
         	  }
@@ -42,19 +43,18 @@ public class PollSpout extends BaseRichSpout {
         	  declarer.declare(new Fields("Poll"));
           }
           
-          private void generatingPollData() {
-        	  for(int i = 1; i <= 100000; i++) {
-        		  data = new PollDTO();
+          private void generatingPollData(int num) {
+        	  for(int i = 1+num; i <= 250000+num; i++) {
+        		  data = new CarDTO();
         		  data.setPollNum(i);
-        		  data.setAngle(random.nextDouble()*180);
-        		  data.setLiveWireNum(random.nextInt(8));
+        		  data.setGps(random.nextInt(8));
         		  data.setPressure(random.nextDouble()*100);
         		  data.setTemperature(random.nextDouble()*100);
-        		  data.setAngleOk(true);
         		  data.setPressOk(true);
-        		  data.setWireOk(true);
+        		  data.setGpsOk(true);
         		  data.setTemperOk(true);
         		  queue.offer(data);
         	  }
+        	  this.num = 250000+num;
           }     
 }

@@ -3,7 +3,7 @@ package com.ingue.pollStorm;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.ingue.dto.PollDTO;
+import com.ingue.dto.CarDTO;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseBasicBolt;
@@ -12,12 +12,12 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
 public class PressSensingBolt extends BaseBasicBolt {
-	LinkedBlockingQueue<PollDTO> queue = null;
-	PollDTO data;
+	LinkedBlockingQueue<CarDTO> queue = null;
+	CarDTO data;
 	
 	protected PressSensingBolt() {
-		queue = new LinkedBlockingQueue<PollDTO>(300000);
-		data = new PollDTO();
+		queue = new LinkedBlockingQueue<CarDTO>(300000);
+		data = new CarDTO();
 	}
 	
 	@Override
@@ -32,12 +32,12 @@ public class PressSensingBolt extends BaseBasicBolt {
 	}
 
     public void checkAndAddQueue(Tuple tuple, BasicOutputCollector collector) {
-    	data = (PollDTO) tuple.getValueByField("Poll");
+    	data = (CarDTO) tuple.getValueByField("Poll");
     	if(data.getPressure() <= 50) {
-    		queue.offer((PollDTO)data);
+    		queue.offer((CarDTO)data);
     	}else {
     		data.setPressOk(false);
-    		queue.offer((PollDTO)data);
+    		queue.offer((CarDTO)data);
     	}
     }
 

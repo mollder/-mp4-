@@ -3,36 +3,26 @@ package com.ingue.dto;
 import java.io.Serializable;
 
 // 전신주 데이터 포맷 클래스
-public class PollDTO implements Serializable{
+public class CarDTO implements Serializable{
 
 	@Override
 	public String toString() {
-		return "PollDTO [pollNum=" + pollNum + ", angle=" + angle
-				+ ", temperature=" + temperature + ", pressure=" + pressure
-				+ ", liveWireNum=" + liveWireNum + "]";
+		return "PollDTO [pollNum=" + pollNum + ", angle=" + 
+	", temperature=" + temperature + ", pressure=" + pressure
+				+ ", liveWireNum=" + "]";
 	}
 
 	private static final long serialVersionUID = -1307505116232650700L;
 	private int pollNum;
-	private double angle;
 	private double temperature;
 	private double pressure;
-	private int liveWireNum;
-	private boolean wireOk;
+	private int gps;
+	private boolean gpsOk;
 	private boolean temperOk;
-	private boolean angleOk;
 	private boolean pressOk;
 	
-	public PollDTO() {
+	public CarDTO() {
 		
-	}
-
-	public double getAngle() {
-		return angle;
-	}
-
-	public void setAngle(double angle) {
-		this.angle = angle;
 	}
 
 	public int getPollNum() {
@@ -59,14 +49,6 @@ public class PollDTO implements Serializable{
 		this.pressure = pressure;
 	}
 
-	public int getLiveWireNum() {
-		return liveWireNum;
-	}
-
-	public void setLiveWireNum(int liveWireNum) {
-		this.liveWireNum = liveWireNum;
-	}
-
 	public boolean isPressOk() {
 		return pressOk;
 	}
@@ -74,15 +56,7 @@ public class PollDTO implements Serializable{
 	public void setPressOk(boolean pressOk) {
 		this.pressOk = pressOk;
 	}
-
-	public boolean isAngleOk() {
-		return angleOk;
-	}
-
-	public void setAngleOk(boolean angleOk) {
-		this.angleOk = angleOk;
-	}
-
+	
 	public boolean isTemperOk() {
 		return temperOk;
 	}
@@ -91,12 +65,20 @@ public class PollDTO implements Serializable{
 		this.temperOk = temperOk;
 	}
 
-	public boolean isWireOk() {
-		return wireOk;
+	public int getGps() {
+		return gps;
 	}
 
-	public void setWireOk(boolean wireOk) {
-		this.wireOk = wireOk;
+	public void setGps(int gps) {
+		this.gps = gps;
+	}
+
+	public boolean isGpsOk() {
+		return gpsOk;
+	}
+
+	public void setGpsOk(boolean gpsOk) {
+		this.gpsOk = gpsOk;
 	}
 
 }

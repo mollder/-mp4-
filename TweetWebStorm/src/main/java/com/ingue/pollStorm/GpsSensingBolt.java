@@ -11,15 +11,15 @@ import backtype.storm.tuple.Values;
 import com.ingue.dto.*;
 
 // 디비에 단어를 넣는 클래스
-public class WireSensingBolt extends BaseBasicBolt{
+public class GpsSensingBolt extends BaseBasicBolt{
 
 	private static final long serialVersionUID = -2179294233058608620L;
-	PollDTO data;
-	LinkedBlockingQueue<PollDTO> queue = null;
+	CarDTO data;
+	LinkedBlockingQueue<CarDTO> queue = null;
 	
-	public WireSensingBolt() {
-		queue = new LinkedBlockingQueue<PollDTO>(300000);
-		data = new PollDTO();
+	public GpsSensingBolt() {
+		queue = new LinkedBlockingQueue<CarDTO>(300000);
+		data = new CarDTO();
 	}
 
     public void execute(Tuple tuple, BasicOutputCollector collector) {
@@ -33,12 +33,12 @@ public class WireSensingBolt extends BaseBasicBolt{
     }
     
     public void checkAndAddQueue(Tuple tuple, BasicOutputCollector collector) {
-    	data = (PollDTO) tuple.getValueByField("Poll");
-    	if(data.getLiveWireNum() > 4) {
-    		queue.offer((PollDTO)data);
+    	data = (CarDTO) tuple.getValueByField("Poll");
+    	if(data.getGps() > 4) {
+    		queue.offer((CarDTO)data);
     	}else {
-    		data.setWireOk(false);
-    		queue.offer((PollDTO)data);
+    		data.setGpsOk(false);
+    		queue.offer((CarDTO)data);
     	}
     }
 

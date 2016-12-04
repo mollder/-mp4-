@@ -3,7 +3,7 @@ package com.ingue.pollStorm;
 import java.util.List;
 import java.util.Map;
 
-import com.ingue.dto.PollDTO;
+import com.ingue.dto.CarDTO;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -17,16 +17,16 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 
+//cron table
+//
+//이상테이블에 따로저장
+//이상테이블 감시하는 task
 public class DbBolt implements IRichBolt {
 	
 	private DB mongoDB;
 	DBCollection collection;
-	private PollDTO data;
-	private List<PollDTO> list;
-	private int wrongWireSize;
-	private int wrongTemperSize;
-	private int wrongAngleSize;
-	private int wrongPressSize;
+	private List<CarDTO> list;
+	CarDTO data;
 
 	@Override
 	public void prepare(Map stormConf, TopologyContext context,
@@ -34,7 +34,8 @@ public class DbBolt implements IRichBolt {
 		// TODO Auto-generated method stub
 		try {
 			this.mongoDB = new Mongo("localhost",27017).getDB("Data");
-			this.collection=this.mongoDB.getCollection("Datas");
+			this.collection=this.mongoDB.getCollection("Test2");
+			data = new CarDTO();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -42,8 +43,8 @@ public class DbBolt implements IRichBolt {
 
 	@Override
 	public void execute(Tuple input) {
-		// TODO Auto-generated method stub
-		
+		data = (CarDTO) input.getValueByField("Poll");
+		this.insertPollDTO(data);
 	}
 
 	@Override
@@ -52,71 +53,125 @@ public class DbBolt implements IRichBolt {
 		this.mongoDB.getMongo().close();
 	}
 	
-	public void insertPollDTO(PollDTO dtoData) {
+	public void insertPollDTO(CarDTO dtoData) {
 	      BasicDBObject object = new BasicDBObject();
 	      object.put("getPollNum",dtoData.getPollNum());
-	      object.put("angle", dtoData.getAngle());
 	      object.put("temperature",dtoData.getTemperature());
 	      object.put("pressure", dtoData.getPressure());
-	      object.put("liveWireNum", dtoData.getLiveWireNum());
-	      object.put("angleOk", dtoData.isAngleOk());
+	      object.put("gps", dtoData.getGps());
 	      object.put("pressOk", dtoData.isPressOk());
 	      object.put("temperOk", dtoData.isTemperOk());
-	      object.put("wireOk", dtoData.isWireOk());
+	      object.put("gpsOk", dtoData.isGpsOk());
 	      this.collection.insert(object);
 	}
 	
-	public List<PollDTO> findWireWrongDataPollDTO() {	
+	public List<CarDTO> findWireWrongDataPollDTO() {	
 		BasicDBObject query = new BasicDBObject();
 		query.put("wireOk", false);
 		DBCursor cursor = collection.find(query);
 		int i = 0;
 		while(cursor.hasNext()) {
-			list.add(i, (PollDTO)cursor.next());
+			list.add(i, (CarDTO)cursor.next());
 			i++;
 		}
-		wrongWireSize = i;
 		return list;
 	}
 	
-	public List<PollDTO> findTemperWrongDataPollDTO() {
+	public List<CarDTO> findTemperWrongDataPollDTO() {
 		
 		BasicDBObject query = new BasicDBObject();
 		query.put("temperOk", false);
 		DBCursor cursor = collection.find(query);
 		int i = 0;
 		while(cursor.hasNext()) {
-			list.add(i, (PollDTO)cursor.next());
+			list.add(i, (CarDTO)cursor.next());
 			i++;
 		}
-		wrongTemperSize = i;
 		return list;
 	}
-
-	public List<PollDTO> findAngleWrongDataPollDTO() {
+ 
+	public List<CarDTO> findAngleWrongDataPollDTO() {
 		BasicDBObject query = new BasicDBObject();
 		query.put("angleOk", false);
 		DBCursor cursor = collection.find(query);
 		int i = 0;
 		while(cursor.hasNext()) {
-			list.add(i, (PollDTO)cursor.next());
+			list.add(i, (CarDTO)cursor.next());
 			i++;
-		}
-		wrongAngleSize = i; 
+		} 
 		return list;
 	}
 
-	public List<PollDTO> findPressWrongDataPollDTO() {
+	public List<CarDTO> findPressWrongDataPollDTO() {
 		BasicDBObject query = new BasicDBObject();
 		query.put("pressOk", false);
 		DBCursor cursor = collection.find(query);
 		int i = 0;
 		while(cursor.hasNext()) {
-			list.add(i, (PollDTO)cursor.next());
+			list.add(i, (CarDTO)cursor.next());
 			i++;
 		}
-		wrongPressSize = i;
 		return list;
+	}
+	
+	public int getWrongGpsSize() {
+		BasicDBObject query = new BasicDBObject();
+		query.put("GpsOk", false);
+		DBCursor cursor = collection.find(query);
+		return cursor.size();
+	}
+	
+	public int getWrongGpsPageSize() {
+		if((getWrongGpsSize() % 10) == 0) {
+			return getWrongGpsSize()/10;
+		} else {
+			return (getWrongGpsSize()/10)+1;
+		}
+	}
+	
+	public int getWrongTemperSize() {
+		BasicDBObject query = new BasicDBObject();
+		query.put("temperOk", false);
+		DBCursor cursor = collection.find(query);
+		return cursor.size();
+	}
+	
+	public int getWrongTemperPageSize() {
+		if((getWrongTemperSize() % 10) == 0) {
+			return getWrongTemperSize()/10;
+		} else {
+			return (getWrongTemperSize()/10)+1;
+		}
+	}
+
+	public int getWrongPressSize() {
+		BasicDBObject query = new BasicDBObject();
+		query.put("pressOk", false);
+		DBCursor cursor = collection.find(query);
+		return cursor.size();
+	}
+	
+	public int getWrongPressPageSize() {
+		if((getWrongPressSize() % 10) == 0) {
+			return getWrongPressSize()/10;
+		} else {
+			return (getWrongPressSize()/10)+1;
+		}
+	}
+	
+	public int getWrongDataSize() {
+		return getWrongGpsSize()+getWrongTemperSize()+
+				getWrongPressSize();
+	}
+	
+	public int getWrongDataPageSize() {
+		if(((getWrongGpsSize()+getWrongTemperSize()+
+				getWrongPressSize()) % 10) == 0 ) {
+			return (getWrongGpsSize()+getWrongTemperSize()+
+					getWrongPressSize())/10;
+		}
+		return ((getWrongGpsSize()+getWrongTemperSize()+
+				getWrongPressSize())/10)+1;
 	}
 
 	@Override
