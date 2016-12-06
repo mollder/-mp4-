@@ -14,6 +14,7 @@ import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichSpout;
 import backtype.storm.tuple.Fields;
+import backtype.storm.tuple.Values;
 
 //위도경도  / 가속도센서 / 비상벨 ID / 현재시간
 // 가속도센서 
@@ -27,37 +28,56 @@ public class EmerbellSpout extends BaseRichSpout {
     Random random;
     EmerDTO data;
     int num = 0;
+    String str;
     
-    public void EmerBellSpout() {
+    public EmerbellSpout() {
     	queue = new LinkedBlockingQueue<EmerDTO>(300000);
   	  	random = new Random();
-  	  	generateEmerData(num);
+		generateEmerData(num);
     }
 
 	@Override
 	public void open(Map conf, TopologyContext context,
 			SpoutOutputCollector collector) {
 		// TODO Auto-generated method stub
+		this.collector = collector;
 		
 	}
 
 	@Override
 	public void nextTuple() {
 		// TODO Auto-generated method stub
+		if(queue.isEmpty()) {
+			generateEmerData(num);
+	  	}else{
+	        this.collector.emit(new Values(queue.poll()));
+	  	}
 		
 	}
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		// TODO Auto-generated method stub
-		declarer.declare(new Fields("Poll"));
+		declarer.declare(new Fields("Emer"));
 	}
 	
 	public void generateEmerData(int num) {
-		long time = System.currentTimeMillis(); 
-		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-		String str = dayTime.format(new Date(time));
-		
-		
+		for(int i = 1+num; i <= 250000+num; i++) {
+			long time = System.currentTimeMillis(); 
+			SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+			str = dayTime.format(new Date(time));
+			data = new EmerDTO();
+			data.setEmerNum(1);
+			data.setEmerAcc(random.nextInt(1));
+			data.setEmerAccOk(true);
+			data.setWrongNum(0);
+			data.setEmerTime(str);
+  		  
+			if((i % 20000) == 0) {
+				data.setEmerAcc(random.nextInt(100)+10); 
+  		  	}
+			queue.offer(data);
+		}
+  	  	this.num = 250000+num;
 	}
 }

@@ -1,4 +1,4 @@
-package com.bikeshop.alarm;
+package com.bikeshop.carAlarm;
 
 import java.util.List;
 import java.util.Map;
@@ -75,7 +75,6 @@ public class alarmSpout implements IRichSpout {
 				wrongData.setCarOk((boolean)this.wrongCollection.findOne().get("pressOk"));
 				wrongData.setCarPress((int)this.wrongCollection.findOne().get("press"));
 				wrongData.setTime((String)this.wrongCollection.findOne().get("time"));
-				wrongData.setWrongNum((int)this.wrongCollection.findOne().get("wrongNum"));
 				queue.offer(wrongData);
 
 				object.put("getCarNum", 1);

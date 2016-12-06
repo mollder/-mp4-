@@ -1,5 +1,4 @@
-package com.bikeshop.emerbell;
-
+package com.bikeshop.school;
 import java.util.List;
 import java.util.Map;
 
@@ -16,8 +15,8 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 
-public class EmerDbBolt implements IRichBolt {
-	EmerDTO data;
+public class SchoolDbBolt implements IRichBolt {
+	SchoolDTO data;
 	private DB mongoDB;
 	DBCollection Normalcollection;
 	DBCollection Wrongcollection;
@@ -28,8 +27,8 @@ public class EmerDbBolt implements IRichBolt {
 			OutputCollector collector) {
 		try {
 			this.mongoDB = new Mongo("localhost",27017).getDB("Data");
-			this.Normalcollection=this.mongoDB.getCollection("NormalEmer");
-			this.Wrongcollection = this.mongoDB.getCollection("WrongEmer");
+			this.Normalcollection=this.mongoDB.getCollection("NormalSchool");
+			this.Wrongcollection = this.mongoDB.getCollection("WrongSchool");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -39,11 +38,11 @@ public class EmerDbBolt implements IRichBolt {
 	@Override
 	public void execute(Tuple input) {
 		// TODO Auto-generated method stub
-		data = (EmerDTO) input.getValueByField("Emer");
-		if(data.isEmerAccOk() == true) {
-			this.insertNormalEmerDTO(data);
+		data = (SchoolDTO) input.getValueByField("School");
+		if(data.isGatePass() == true) {
+			this.insertNormalSchoolDTO(data);
 		}else {
-			this.insertWrongEmerDTO(data);
+			this.insertWrongSchoolDTO(data);
 		}
 	}
 
@@ -55,7 +54,7 @@ public class EmerDbBolt implements IRichBolt {
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		// TODO Auto-generated method stub
-		declarer.declare(new Fields("Emer"));
+		declarer.declare(new Fields("School"));
 	}
 
 	@Override
@@ -64,24 +63,22 @@ public class EmerDbBolt implements IRichBolt {
 		return null;
 	}
 	
-	public void insertNormalEmerDTO(EmerDTO dtoData) {
+	public void insertNormalSchoolDTO(SchoolDTO dtoData) {
 		BasicDBObject object = new BasicDBObject();
-		object.put("getEmerNum", dtoData.getEmerNum());
-		object.put("acc", dtoData.getEmerAcc());
-		object.put("accOk", dtoData.isEmerAccOk());
-		object.put("Emertime", dtoData.getEmerTime());
-		object.put("EmerWrongNum", dtoData.getWrongNum());
+		object.put("getStdNum", dtoData.getStdNum());
+		object.put("StdOk", dtoData.isGatePass());
+		object.put("SchoolTime", dtoData.getSchoolTime());
+		object.put("wrongNum", dtoData.getWrongNum());
 		
 		this.Normalcollection.insert(object);
 	}
 	
-	public void insertWrongEmerDTO(EmerDTO dtoData) {
+	public void insertWrongSchoolDTO(SchoolDTO dtoData) {
 		BasicDBObject object = new BasicDBObject();
-		object.put("getEmerNum", dtoData.getEmerNum());
-		object.put("acc", dtoData.getEmerAcc());
-		object.put("accOk", dtoData.isEmerAccOk());
-		object.put("Emertime", dtoData.getEmerTime());
-		object.put("EmerWrongNum", dtoData.getWrongNum());
+		object.put("getStdNum", dtoData.getStdNum());
+		object.put("StdOk", dtoData.isGatePass());
+		object.put("SchoolTime", dtoData.getSchoolTime());
+		object.put("wrongNum", dtoData.getWrongNum());
 		
 		this.Wrongcollection.insert(object);
 	}

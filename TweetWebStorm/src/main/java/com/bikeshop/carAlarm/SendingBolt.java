@@ -1,7 +1,8 @@
-package com.bikeshop.alarm;
+package com.bikeshop.carAlarm;
 
 import java.util.List;
 import java.util.Map;
+import com.bikeshop.sms.*;
 
 import com.bikeshop.dto.CarDTO;
 
@@ -35,7 +36,8 @@ public class SendingBolt implements IRichBolt  {
 	public void execute(Tuple input) {
 		// TODO Auto-generated method stub
 		data = (CarDTO) input.getValueByField("WrongCar");
-		//SendSMS sms = new SendSMS();
+		String s = "차에 이상이 생겻네";
+		SendSMS sms = new SendSMS(s);
 	}
 
 	@Override

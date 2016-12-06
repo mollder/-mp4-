@@ -1,26 +1,24 @@
 package com.bikeshop.dto;
 
+import java.io.Serializable;
+
 // 위도경도 / 가속도센서 / 비상벨 ID / 현재시간
 
-public class EmerDTO {
-	private int emerLocation;
+public class EmerDTO implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7069690277758917245L;
 	private int emerAcc;
 	private int emerNum;
-	private long emerTime;
-	private boolean emerLoactionOk;
+	private String emerTime;
 	private boolean emerAccOk;
-	private boolean emerNumOk;
+	private int wrongNum;
 	
 	public void EmerDTO() {
 		
 	}
 	
-	public int getEmerLocation() {
-		return emerLocation;
-	}
-	public void setEmerLocation(int emerLocation) {
-		this.emerLocation = emerLocation;
-	}
 	public int getEmerAcc() {
 		return emerAcc;
 	}
@@ -33,19 +31,11 @@ public class EmerDTO {
 	public void setEmerNum(int emerNum) {
 		this.emerNum = emerNum;
 	}
-	public long getEmerTime() {
+	public String getEmerTime() {
 		return emerTime;
 	}
-	public void setEmerTime(long emerTime) {
+	public void setEmerTime(String emerTime) {
 		this.emerTime = emerTime;
-	}
-
-	public boolean isEmerLoactionOk() {
-		return emerLoactionOk;
-	}
-
-	public void setEmerLoactionOk(boolean emerLoactionOk) {
-		this.emerLoactionOk = emerLoactionOk;
 	}
 
 	public boolean isEmerAccOk() {
@@ -56,11 +46,12 @@ public class EmerDTO {
 		this.emerAccOk = emerAccOk;
 	}
 
-	public boolean isEmerNumOk() {
-		return emerNumOk;
+	public int getWrongNum() {
+		return wrongNum;
 	}
 
-	public void setEmerNumOk(boolean emerNumOk) {
-		this.emerNumOk = emerNumOk;
+	public void setWrongNum(int wrongNum) {
+		this.wrongNum = wrongNum;
 	}
+
 }
