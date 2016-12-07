@@ -9,8 +9,9 @@ public class SchoolDTO implements Serializable {
 	 */
 	private static final long serialVersionUID = 7190138962594316319L;
 	private int stdNum;
-	private boolean gatePass;
+	private boolean stdOk;
 	private String SchoolTime;
+	private boolean passOk;
 	private int wrongNum;
 	
 	public int getStdNum() {
@@ -19,11 +20,11 @@ public class SchoolDTO implements Serializable {
 	public void setStdNum(int stdNum) {
 		this.stdNum = stdNum;
 	}
-	public boolean isGatePass() {
-		return gatePass;
+	public boolean isStdOk() {
+		return this.stdOk;
 	}
-	public void setGatePass(boolean gatePass) {
-		this.gatePass = gatePass;
+	public void setStdOk(boolean stdOk) {
+		this.stdOk = stdOk;
 	}
 	public String getSchoolTime() {
 		return this.SchoolTime;
@@ -37,5 +38,10 @@ public class SchoolDTO implements Serializable {
 	public void setWrongNum(int wrongNum) {
 		this.wrongNum = wrongNum;
 	}
-
+	public boolean isPassOk() {
+		return passOk;
+	}
+	public void setPassOk(boolean passOk) {
+		this.passOk = passOk;
+	}
 }

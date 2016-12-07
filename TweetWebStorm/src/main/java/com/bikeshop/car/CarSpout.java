@@ -26,7 +26,6 @@ public class CarSpout extends BaseRichSpout {
     String str;
 	
 	public CarSpout() {
-		
 		queue = new LinkedBlockingQueue<CarDTO>(300000);
   	  	random = new Random();
 		generateCarData(num);
@@ -34,7 +33,7 @@ public class CarSpout extends BaseRichSpout {
 
 	@Override
 	public void open(Map conf, TopologyContext context,
-			SpoutOutputCollector collector) {
+		SpoutOutputCollector collector) {
 		// TODO Auto-generated method stub
 		this.collector = collector;
 	}
@@ -43,10 +42,10 @@ public class CarSpout extends BaseRichSpout {
 	public void nextTuple() {
 		// TODO Auto-generated method stub
 		if(queue.isEmpty()) {
-  		  generateCarData(num);
+			generateCarData(num);
   	  	}else{
-           this.collector.emit(new Values(queue.poll()));
-  	  }
+  	  		this.collector.emit(new Values(queue.poll()));
+  	  	}
 	}
 
 	@Override
@@ -67,7 +66,7 @@ public class CarSpout extends BaseRichSpout {
 			data.setWrongNum(0);
 			data.setTime(str);
   		  
-			if((i % 20000) == 0) {
+			if((i % 5000) == 0) {
 				data.setCarPress(random.nextInt(20000)+21); 
   		  	}
 			queue.offer(data);

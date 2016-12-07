@@ -69,11 +69,11 @@ public class EmerbellSpout extends BaseRichSpout {
 			data = new EmerDTO();
 			data.setEmerNum(1);
 			data.setEmerAcc(random.nextInt(1));
-			data.setEmerAccOk(true);
+			data.setEmerOk(true);
 			data.setWrongNum(0);
 			data.setEmerTime(str);
   		  
-			if((i % 20000) == 0) {
+			if((i % 5000) == 0) {
 				data.setEmerAcc(random.nextInt(100)+10); 
   		  	}
 			queue.offer(data);

@@ -44,10 +44,10 @@ public class SchoolSpout extends BaseRichSpout {
 	public void nextTuple() {
 		// TODO Auto-generated method stub
 		if(queue.isEmpty()) {
-  		  generateCarData(num);
-  	  	}else{
-           this.collector.emit(new Values(queue.poll()));
-  	  }
+			generateCarData(num);
+		}else{
+			this.collector.emit(new Values(queue.poll()));
+  	  	}
 	}
 
 	@Override
@@ -63,12 +63,13 @@ public class SchoolSpout extends BaseRichSpout {
 			str = dayTime.format(new Date(time));
 			data = new SchoolDTO();
 			data.setStdNum(1);
-			data.setGatePass(true);
+			data.setStdOk(true);
+			data.setPassOk(true);
 			data.setWrongNum(0);
 			data.setSchoolTime(str);
   		  
-			if((i % 20000) == 0) {
-				data.setGatePass(false); 
+			if((i % 5000) == 0) {
+				data.setPassOk(false);
   		  	}
 			queue.offer(data);
 		}

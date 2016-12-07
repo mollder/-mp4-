@@ -1,24 +1,27 @@
-package com.bikeshop.emerbell;
-
+package com.bikeshop.school;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.bikeshop.dto.EmerDTO;
+import com.bikeshop.dto.*;
 
+import backtype.storm.task.OutputCollector;
+import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.BasicOutputCollector;
+import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseBasicBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
-public class EmerAccBolt extends BaseBasicBolt {
-	LinkedBlockingQueue<EmerDTO> queue = null;
-	EmerDTO data;
-	int i = 1;
+public class SchoolFilterBolt extends BaseBasicBolt {
+	LinkedBlockingQueue<SchoolDTO> queue = null;
+	SchoolDTO data;
 	
-	public EmerAccBolt() {
-		queue = new LinkedBlockingQueue<EmerDTO>(300000);
-		data = new EmerDTO();
+	public SchoolFilterBolt() {
+		queue = new LinkedBlockingQueue<SchoolDTO>(300000);
+		data = new SchoolDTO();
 	}
 	@Override
 	public void execute(Tuple input, BasicOutputCollector collector) {
@@ -32,21 +35,19 @@ public class EmerAccBolt extends BaseBasicBolt {
 	}
 	
 	public void checkAndAddQueue(Tuple tuple, BasicOutputCollector collector) {
-	   	data = (EmerDTO) tuple.getValueByField("Emer");
-	   	if(data.getEmerAcc() <= 10) {
-	   		queue.offer((EmerDTO)data);
+	   	data = (SchoolDTO) tuple.getValueByField("School");
+	   	if(data.isPassOk()) {
+	   		queue.offer((SchoolDTO)data);
 	   	}else {
-	   		data.setEmerAccOk(false);
-	   		data.setWrongNum(i);
-	   		queue.offer((EmerDTO)data);
-	   		i++;
+	   		data.setStdOk(false);
+	   		data.setWrongNum(0);
+	   		queue.offer((SchoolDTO)data);
 	   	}
 	}
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		// TODO Auto-generated method stub
-		declarer.declare(new Fields("Emer"));
+		declarer.declare(new Fields("School"));
 	}
-
 }

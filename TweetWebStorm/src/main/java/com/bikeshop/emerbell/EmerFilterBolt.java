@@ -1,8 +1,8 @@
-package com.bikeshop.car;
+package com.bikeshop.emerbell;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.bikeshop.dto.CarDTO;
+import com.bikeshop.dto.EmerDTO;
 
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -11,14 +11,14 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
-public class CarPressBolt extends BaseBasicBolt {
-	LinkedBlockingQueue<CarDTO> queue = null;
-	CarDTO data;
+public class EmerFilterBolt extends BaseBasicBolt {
+	LinkedBlockingQueue<EmerDTO> queue = null;
+	EmerDTO data;
 	int i = 1;
 	
-	public CarPressBolt() {
-		queue = new LinkedBlockingQueue<CarDTO>(300000);
-		data = new CarDTO();
+	public EmerFilterBolt() {
+		queue = new LinkedBlockingQueue<EmerDTO>(300000);
+		data = new EmerDTO();
 	}
 	@Override
 	public void execute(Tuple input, BasicOutputCollector collector) {
@@ -32,13 +32,13 @@ public class CarPressBolt extends BaseBasicBolt {
 	}
 	
 	public void checkAndAddQueue(Tuple tuple, BasicOutputCollector collector) {
-	   	data = (CarDTO) tuple.getValueByField("Car");
-	   	if(data.getCarPress() <= 20) {
-	   		queue.offer((CarDTO)data);
+	   	data = (EmerDTO) tuple.getValueByField("Emer");
+	   	if(data.getEmerAcc() <= 10) {
+	   		queue.offer((EmerDTO)data);
 	   	}else {
-	   		data.setCarOk(false);
+	   		data.setEmerOk(false);
 	   		data.setWrongNum(i);
-	   		queue.offer((CarDTO)data);
+	   		queue.offer((EmerDTO)data);
 	   		i++;
 	   	}
 	}
@@ -46,6 +46,7 @@ public class CarPressBolt extends BaseBasicBolt {
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		// TODO Auto-generated method stub
-		declarer.declare(new Fields("Car"));
+		declarer.declare(new Fields("Emer"));
 	}
+
 }

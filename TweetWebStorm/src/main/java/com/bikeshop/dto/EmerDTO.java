@@ -12,7 +12,7 @@ public class EmerDTO implements Serializable{
 	private int emerAcc;
 	private int emerNum;
 	private String emerTime;
-	private boolean emerAccOk;
+	private boolean emerOk;
 	private int wrongNum;
 	
 	public void EmerDTO() {
@@ -38,12 +38,12 @@ public class EmerDTO implements Serializable{
 		this.emerTime = emerTime;
 	}
 
-	public boolean isEmerAccOk() {
-		return emerAccOk;
+	public boolean isEmerOk() {
+		return emerOk;
 	}
 
-	public void setEmerAccOk(boolean emerAccOk) {
-		this.emerAccOk = emerAccOk;
+	public void setEmerOk(boolean emerOk) {
+		this.emerOk = emerOk;
 	}
 
 	public int getWrongNum() {
